@@ -14,7 +14,9 @@ using namespace Event;
 using std::cout;
 using std::endl;
 BeamInfoSvc::BeamInfoSvc(const std::string& name, ISvcLocator* svcLoc)
-    : Service(name, svcLoc), m_runID(0), m_eventID(0), m_status(0) {
+    : Service(name, svcLoc), m_runID(0), m_eventID(0), 
+    m_status(0), 
+    m_setEcm(0) {
     UpdateAvialInfo();
     // calibrated beam Energy
     SetName("");
@@ -41,8 +43,7 @@ void BeamInfoSvc::GetInfoI(const std::string& info_name, int& targe) {
 }
 void BeamInfoSvc::GetInfoD(const std::string& info_name, double& targe) {
     if (info_name == "Ecm") {
-        this->AnaBeamStatus();
-        targe = m_Ecm;
+        GetEcm(targe);
     }
 }
 
@@ -60,7 +61,7 @@ void BeamInfoSvc::AnaBeamStatus() {
         //  cout << "Info in BeamInfoSvc::AnaBeamStatus: "
         //      << "#run = " << m_run << ", #id = " << m_event << endl;
     }
-    this->ReadDb(m_runID, m_Ecm);
+    this->ReadDb(abs(m_runID), m_Ecm);
 }
 
 void BeamInfoSvc::ReadDb(int run, double& Ecm) {
@@ -80,6 +81,8 @@ void BeamInfoSvc::ReadDb(int run, double& Ecm) {
         }
         DatabaseRecord* records = res[0];
         Ecm = 2 * records->GetDouble("beam_energy");
+       ///cout << "calibrated beam_energy = " << records->GetDouble("beam_energy")
+       ///    << endl;
     } else {
         // use online beam Energy
         char stmt1[1024];
@@ -98,13 +101,22 @@ void BeamInfoSvc::ReadDb(int run, double& Ecm) {
         E_E = records->GetDouble("BER_PRB");
         E_P = records->GetDouble("BPR_PRB");
         Ecm = E_E + E_P;
+      /// cout << "beam_energy = " << Ecm
+      ///     << endl;
     }
     return;
 }
 
 void BeamInfoSvc::GetEcm(double& Ecm) {
     AnaBeamStatus();
+    if (m_setEcm) {
+        Ecm = m_Ecm;
+    }
     if (m_status == 0) {
         Ecm = m_Ecm;
     }
+}
+void BeamInfoSvc::SetEcm(double Ecm) {
+    m_setEcm = true;
+    m_Ecm = Ecm;
 }

@@ -53,9 +53,10 @@ class BeamInfoSvc : public Service,
     virtual void GetInfoI(const std::string& info_name, int& targe);
     virtual void GetInfoD(const std::string& info_name, double& targe);
     void GetEcm(double& Ecm);
+    void SetEcm(double Ecm);
 
    private:
-    bool m_usecbE;
+    bool m_usecbE, m_setEcm;
     int m_runID, m_eventID;
     int m_status;
     double m_Ecm;
