@@ -18,8 +18,13 @@
 #include "McTruth/MdcMcHit.h"
 #include "MdcRecEvent/RecMdcHit.h"
 #include "EvtRecEvent/EvtRecTrack.h"
+#include "EventModel/EventHeader.h"
+#include "EvtRecEvent/EvtRecEvent.h"
 #include "BeamInfoSvc/IBeamInfoSvc.h"
 #include "EventNavigator/EventNavigator.h"
+#include "BesDChain/CDPhotonList.h"
+#include "BesDChain/CDPi0List.h"
+#include "BesDChain/CDChargedPionList.h"
 
 #include "CLHEP/Vector/ThreeVector.h"
 #include "CLHEP/Vector/LorentzVector.h"
@@ -59,6 +64,7 @@ class BeamInfoSvc : public Service,
     bool m_usecbE, m_setEcm;
     int m_runID, m_eventID;
     int m_status;
+    int m_primaryTrks, m_secondTrks, m_showers, m_tracks;
     double m_Ecm;
 
     IDataProviderSvc* eventSvc_;
@@ -67,6 +73,7 @@ class BeamInfoSvc : public Service,
     mutable EventNavigator* m_navigator;
     void ReadDb(int run, double&);
     void AnaBeamStatus();
+    void AnaTrackStatus();
     void UpdateAvialInfo();
 };
 #endif
